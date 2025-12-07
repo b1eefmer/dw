@@ -12,7 +12,10 @@ class CourseController extends Controller
 {
     public function index()
     {
-        // dd(session()->get('login_web_59ba36addc2b2f9401580f014c7f58ea4e30989d'));
+        if ((auth()->id()!=1) && (auth()->id()!=2) && (auth()->id()!=3))
+        {
+            abort(403);
+        }
         $courses = auth()->user()->courses;
 
         return Inertia::render('Courses/Index', compact('courses'));
