@@ -7,11 +7,12 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useForm } from '@inertiajs/react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Terminal } from 'lucide-react';
+import { Terminal, Video } from 'lucide-react';
 import EditorWrapper from '@/components/Editor/EditorWrapper';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '@/theme'
 import { CssBaseline, Typography, Grid } from '@mui/material';
+import VideoPlayer from '@/components/VideoPlayer/VideoPlayer';
 
 
 interface PageProps {
@@ -24,6 +25,8 @@ export default function Index() {
         section_id: sectionId,
         title: '',
         description: '',
+        type: 'video',
+        video_url: 'https://www.youtube.com/watch?v=FncLJLfXRDM',
     });
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -64,19 +67,40 @@ export default function Index() {
                         <Textarea placeholder='Description' value={data.description} onChange={(e) => setData('description', e.target.value)}></Textarea>
                     </div>
                     <div className='gap-1.5'>
-                        <ThemeProvider theme={theme}>
-                            <CssBaseline />
-                            <Grid container>
-                                <Grid item>
-                                    <Typography variant='h4'>Lexical Editor App</Typography>
-                                </Grid>
-                                <Grid item xs={9} sx={{width: "100%", mt: 5}}>
-                                    <EditorWrapper />
-                                </Grid>
-                            </Grid>
-                        </ThemeProvider>
+                        <Label htmlFor="type">Lesson Type</Label>
+                        <select
+                            id="type"
+                            className="border rounded-md px-3 py-2 w-full"
+                            value={data.type}
+                            onChange={(e) =>
+                                setData('type', e.target.value as 'text' | 'video')
+                            }
+                        >
+                            <option value="text">Text lesson</option>
+                            <option value="video">Video lesson</option>
+                        </select>
                     </div>
-                    <Button type="submit" className='mt-4'>Create Section</Button>
+                    {data.type === 'text' && (
+                        <div className='gap-1.5'>
+                            <ThemeProvider theme={theme}>
+                                <CssBaseline />
+                                <Grid container>
+                                    <Grid item>
+                                        <Typography variant='h4'>Lexical Editor App</Typography>
+                                    </Grid>
+                                    <Grid item xs={9} sx={{ width: "100%", mt: 5 }}>
+                                        <EditorWrapper />
+                                    </Grid>
+                                </Grid>
+                            </ThemeProvider>
+                        </div>
+                    )}
+                    {data.type === 'video' && (
+                        <div className='gap-1.5'>
+                            <VideoPlayer src='https://www.youtube.com/watch?v=FncLJLfXRDM' poster={undefined} title='Lucide Icons in React / Next.js project with lucide-react' />
+                        </div>
+                    )}
+                    <Button type="submit" className='mt-4'>Create Lesson</Button>
                 </form>
             </div>
         </AppLayout>

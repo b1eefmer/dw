@@ -29,6 +29,11 @@ const mainNavItems: NavItem[] = [
         icon: PackageSearch,
     },
     {
+        title: 'My Courses',
+        href: '/my-courses',
+        icon: PackageSearch,
+    },
+    {
         title: 'Courses',
         href: '/courses',
         icon: PackageSearch,

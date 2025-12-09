@@ -1,5 +1,5 @@
 import { Grid } from "@mui/material";
-import pluginsList from "./toolbarIconList";
+import pluginsList from "./toolbarIconsList";
 import useOnClickListener from "./useOnClickListener";
 
 const Toolbar = () => {

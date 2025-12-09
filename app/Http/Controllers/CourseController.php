@@ -12,8 +12,7 @@ class CourseController extends Controller
 {
     public function index()
     {
-        if ((auth()->id()!=1) && (auth()->id()!=2) && (auth()->id()!=3))
-        {
+        if ((auth()->id() != 1) && (auth()->id() != 2) && (auth()->id() != 3)) {
             abort(403);
         }
         $courses = auth()->user()->courses;
@@ -23,9 +22,19 @@ class CourseController extends Controller
 
     public function grid()
     {
-        $courses = auth()->user()->courses;
+        // $courses = auth()->user()->courses;
+        $courses = Course::all();
 
-        return Inertia::render('Courses/Grid', compact('courses'));
+        $user = auth()->user();
+
+        $enrolledCourseIds = $user
+            ? $user->enrolledCourses()->pluck('courses.id')->toArray()
+            : [];
+
+        return Inertia::render('Courses/Grid', [
+            'courses' => $courses,
+            'enrolledCourseIds' => $enrolledCourseIds,
+        ]);
     }
 
     public function show(Course $course)

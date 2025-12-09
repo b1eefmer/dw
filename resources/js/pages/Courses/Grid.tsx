@@ -16,6 +16,7 @@ interface Course {
 interface PageProps {
     flash: { message?: string };
     courses: Course[];
+    enrolledCourseIds: number[];
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -26,13 +27,27 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function CourseGrid() {
-    const { courses, flash } = usePage().props as PageProps;
-    const { processing, delete: destroy } = useForm();
+    const { courses, flash, enrolledCourseIds } = usePage().props as PageProps;
+    const { processing, delete: destroy, post } = useForm();
 
     const handleDelete = (id: number, title: string) => {
         if (confirm(`Are you sure you want to delete the course: ${id}, ${title}?`)) {
             destroy(`/courses/${id}`);
         }
+    };
+
+    const handleEnroll = (id: number) => {
+        post(`/courses/${id}/enroll`);
+    };
+
+    const handleUnenroll = (courseId: number) => {
+        if (!confirm('Are you sure?')) return;
+
+        destroy(`/courses/${courseId}/enroll`);
+    };
+
+    const isEnrolled = (id: number) => {
+        return Array.isArray(enrolledCourseIds) && enrolledCourseIds.includes(id);
     };
 
     return (
@@ -62,6 +77,25 @@ export default function CourseGrid() {
                         </h3>
 
                         <p className="text-sm text-slate-900 mb-3">{course.description}</p>
+                        <div className="flex gap-2 mt-4">
+                            {isEnrolled(course.id) ? (
+                                <Button
+                                    variant="destructive"
+                                    disabled={processing}
+                                    onClick={() => handleUnenroll(course.id)}
+                                >
+                                    Unenroll
+                                </Button>
+                            ) : (
+                                <Button
+                                    type="button"
+                                    disabled={processing}
+                                    onClick={() => handleEnroll(course.id)}
+                                >
+                                    Enroll
+                                </Button>
+                            )}
+                        </div>
                     </div>
                 ))}
             </div>
