@@ -61,12 +61,14 @@
     padding: 0;
     margin: 0;
     margin-left: 16px;
+    list-style-type: decimal;
 }
 
 .editor-list-ul {
     padding: 0;
     margin: 0;
     margin-left: 16px;
+    list-style-type: circle;
 }
 
 .editor-listitem {

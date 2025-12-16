@@ -40,6 +40,8 @@ import {
   $isAtNodeEnd,
 } from "@lexical/selection";
 import { eventTypes } from "./toolbarIconsList";
+import useModal from "@/hooks/useModal";
+import { InsertImageDialog } from "../plugin/ImagePlugin";
 // import { InsertImageDialog } from "../CustomPlugins/ImagePlugin";
 // import useModal from "../../common/hooks/useModal";
 
@@ -51,6 +53,7 @@ const useOnClickListener = () => {
   const [selectedEventTypes, setSelectedEventTypes] = useState([]);
   const [isLink, setIsLink] = useState(false);
   const [isRTL, setIsRTL] = useState(false);
+  const [modal, showModal] = useModal();
   // const { openModal } = useModal();
 
   const updateToolbar = useCallback(() => {
@@ -78,7 +81,7 @@ const useOnClickListener = () => {
       const elementKey = element.getKey();
       const elementDOM = editor.getElementByKey(elementKey);
       if (elementDOM !== null) {
-        // setSelectedElementKey(elementKey);
+        //setSelectedElementKey(elementKey);
         if ($isListNode(element)) {
           const parentList = $getNearestNodeOfType(anchorNode, ListNode);
           const type = parentList ? parentList.getTag() : element.getTag();
@@ -107,7 +110,7 @@ const useOnClickListener = () => {
       );
       pushInEventTypesState(selection.hasFormat("code"), eventTypes.formatCode);
 
-      setIsRTL($isParentElementRTL(selection));
+      //setIsRTL($isParentElementRTL(selection));
 
       // Update links
       const node = getSelectedNode(selection);
@@ -127,18 +130,41 @@ const useOnClickListener = () => {
 
       setSelectedEventTypes(allSelectedEvents);
     }
-  }, [editor, selectedEventTypes]);
+  }, [editor]);
 
   useEffect(() => {
-    return mergeRegister(editor.registerUpdateListener(({ editorState }) => {
-      editorState.read(() => {
-        updateToolbar();
-      });
-      editor.registerCommand(SELECTION_CHANGE_COMMAND, () => {
-        updateToolbar();
-        return false;
-      }, LowPriority)
-    }),
+    return mergeRegister(
+      editor.registerUpdateListener(({ editorState }) => {
+        editorState.read(() => {
+          updateToolbar();
+        });
+      }),
+      editor.registerCommand(
+        SELECTION_CHANGE_COMMAND,
+        (_payload, newEditor) => {
+          updateToolbar();
+          return false;
+        },
+        LowPriority
+      )
+    );
+  }, [editor, updateToolbar]);
+
+  useEffect(() => {
+    return mergeRegister(
+      editor.registerUpdateListener(({ editorState }) => {
+        editorState.read(() => {
+          updateToolbar();
+        });
+      }),
+      editor.registerCommand(
+        SELECTION_CHANGE_COMMAND,
+        () => {
+          updateToolbar();
+          return false;
+        },
+        LowPriority
+      )
     );
   }, [editor, updateToolbar]);
 
@@ -162,10 +188,13 @@ const useOnClickListener = () => {
     } else if (event === eventTypes.h2) {
       formatHeading("h2");
     } else if (event === eventTypes.ol) {
+      console.log(event);
       formatNumberedList();
     } else if (event === eventTypes.ul) {
       formatBulletList();
     } else if (event === eventTypes.quote) {
+      console.log(event);
+      //editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "quote");
       formatQuote();
     } else if (event === eventTypes.formatCode) {
       formatCode();
@@ -175,8 +204,23 @@ const useOnClickListener = () => {
     } else if (event === eventTypes.formatUndo) {
       console.log(event);
       editor.dispatchCommand(UNDO_COMMAND, undefined);
+    } else if (event === eventTypes.formatInsertLink) {
+      console.log(event);
+      insertLink();
+    } else if (event === eventTypes.insertImage) {
+      showModal("Insert Image", (onClose) => (
+        <InsertImageDialog activeEditor={editor} onClose={onClose} />
+      ));
     }
   }
+
+  const insertLink = useCallback(() => {
+    if (!isLink) {
+      editor.dispatchCommand(TOGGLE_LINK_COMMAND, "https://");
+    } else {
+      editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
+    }
+  }, [editor, isLink]);
 
   const formatParagraph = () => {
     if (blockType !== "paragraph") {
@@ -202,17 +246,17 @@ const useOnClickListener = () => {
 
   const formatBulletList = () => {
     if (blockType !== "ul") {
-      editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND);
+      editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
     } else {
-      editor.dispatchCommand(REMOVE_LIST_COMMAND);
+      editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
     }
   };
 
   const formatNumberedList = () => {
     if (blockType !== "ol") {
-      editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND);
+      editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
     } else {
-      editor.dispatchCommand(REMOVE_LIST_COMMAND);
+      editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
     }
   };
 
@@ -242,7 +286,7 @@ const useOnClickListener = () => {
     }
   };
 
-  return { onClick }
+  return { onClick, isLink, editor, modal, showModal }
 };
 
 function getSelectedNode(selection) {

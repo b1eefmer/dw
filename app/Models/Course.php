@@ -33,4 +33,9 @@ class Course extends Model
         // hasOne, hasMany, belongsTo, belongsToMany
         return $this->hasMany(Section::class);
     }
+
+    public function lessons()
+    {
+        return $this->hasMany(Lesson::class);
+    }
 }

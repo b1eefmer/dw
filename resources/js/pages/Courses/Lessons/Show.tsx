@@ -13,9 +13,20 @@ interface Lesson {
     content_html: string | null;
 }
 
+interface LessonNavItem {
+    id: number;
+    title: string;
+    url: string;
+}
+
 interface PageProps {
     lesson: Lesson;
+    navigation: {
+        previous: LessonNavItem | null;
+        next: LessonNavItem | null;
+    };
 }
+
 
 const isValidYoutubeUrl = (url: string) => {
     try {
@@ -34,7 +45,9 @@ const isValidYoutubeUrl = (url: string) => {
 };
 
 export default function Show() {
-    const { lesson } = usePage<PageProps>().props;
+    const { lesson, navigation } = usePage<PageProps>().props;
+
+    console.log('navigation:', navigation);
 
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Sections', href: '/sections' },
@@ -53,16 +66,6 @@ export default function Show() {
                 <div className="space-y-2">
                     <h1 className="text-2xl font-semibold">{lesson.title}</h1>
                     {lesson.description && <p className="text-muted-foreground">{lesson.description}</p>}
-
-                    <div className="flex gap-2">
-                        <Link className="text-sm underline" href={`/lessons/${lesson.section_id}/create`}>
-                            + Add lesson
-                        </Link>
-                        <span className="text-sm text-muted-foreground">•</span>
-                        <Link className="text-sm underline" href={`/lessons/${lesson.id}/edit`}>
-                            Edit
-                        </Link>
-                    </div>
                 </div>
 
                 {lesson.type === 'video' && (
@@ -92,6 +95,27 @@ export default function Show() {
                             <p className="text-sm text-muted-foreground">No content yet.</p>
                         )}
                     </div>
+                )}
+            </div>
+            <div className="flex items-center justify-between pt-8">
+                {navigation.previous ? (
+                    <Link
+                        href={navigation.previous.url}
+                        className="rounded-md border px-4 py-2 text-sm hover:bg-muted"
+                    >
+                        ← {navigation.previous.title}
+                    </Link>
+                ) : (
+                    <div />
+                )}
+
+                {navigation.next && (
+                    <Link
+                        href={navigation.next.url}
+                        className="rounded-md border px-4 py-2 text-sm hover:bg-muted"
+                    >
+                        {navigation.next.title} →
+                    </Link>
                 )}
             </div>
         </AppLayout>

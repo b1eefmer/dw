@@ -26,7 +26,10 @@ export default function Index() {
         title: '',
         description: '',
         type: 'video',
-        video_url: 'https://www.youtube.com/watch?v=FncLJLfXRDM',
+        video_url: '',
+        content_json: '',
+        content_html: '',
+        content_text: '',
     });
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -89,15 +92,34 @@ export default function Index() {
                                         <Typography variant='h4'>Lexical Editor App</Typography>
                                     </Grid>
                                     <Grid item xs={9} sx={{ width: "100%", mt: 5 }}>
-                                        <EditorWrapper />
+                                        <EditorWrapper onChange={({ json, html, text }) => {
+                                            setData('content_json', json);
+                                            setData('content_html', html);
+                                            setData('content_text', text);
+                                        }} />
                                     </Grid>
                                 </Grid>
                             </ThemeProvider>
                         </div>
                     )}
                     {data.type === 'video' && (
-                        <div className='gap-1.5'>
-                            <VideoPlayer src='https://www.youtube.com/watch?v=FncLJLfXRDM' poster={undefined} title='Lucide Icons in React / Next.js project with lucide-react' />
+                        <div className="gap-1.5 space-y-2">
+                            <Label htmlFor="video_url">Video URL</Label>
+                            <Input
+                                id="video_url"
+                                type="url"
+                                placeholder="https://www.youtube.com/watch?v=..."
+                                value={data.video_url}
+                                onChange={(e) => setData('video_url', e.target.value)}
+                            />
+
+                            {data.video_url && (
+                                <VideoPlayer
+                                    src={data.video_url}
+                                    poster={undefined}
+                                    title="Lesson video"
+                                />
+                            )}
                         </div>
                     )}
                     <Button type="submit" className='mt-4'>Create Lesson</Button>

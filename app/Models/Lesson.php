@@ -14,12 +14,24 @@ class Lesson extends Model
         'slug',
         'description',
         'order',
+        'course_id',
         'section_id',
+        'type',
+        'video_url',
+        'content_json',
+        'content_html',
+        'content_text',
     ];
 
     public function section()
     {
         // hasOne, hasMany, belongsTo, belongsToMany
         return $this->belongsTo(Section::class);
+    }
+
+    public function course()
+    {
+        // hasOne, hasMany, belongsTo, belongsToMany
+        return $this->belongsTo(Course::class);
     }
 }

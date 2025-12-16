@@ -116,6 +116,7 @@ export default function Show() {
                                 <TableCell>{lesson.order}</TableCell>
                                 <TableCell className="text-center space-x-2">
                                     <Link href={`/lessons/${lesson.id}/edit`}><Button disabled={processing} className='bg-slate-600 hover:bg-slate-700 text-white'>Edit</Button></Link>
+                                    <Link href={`/lessons/${lesson.id}/preview`}><Button disabled={processing} className='bg-slate-600 hover:bg-slate-700 text-white'>Show</Button></Link>
                                     <Button disabled={processing} onClick={() => handleDelete(lesson.id, lesson.title)} className='bg-red-500 hover:bg-red-700 text-white'>Delete</Button>
                                 </TableCell>
                             </TableRow>

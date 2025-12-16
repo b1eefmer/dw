@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseEnrollmentController;
+use App\Http\Controllers\CourseLessonController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\MyCoursesController;
 use App\Http\Controllers\SectionController;
+use App\Http\Controllers\UploadController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -45,6 +47,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/courses/{course}/enroll', [CourseEnrollmentController::class, 'store']);
     Route::delete('/courses/{course}/enroll', [CourseEnrollmentController::class, 'destroy']);
     Route::get('/my-courses', [MyCoursesController::class, 'index'])->name('my-courses');
+
+    Route::post('/uploads/images', [UploadController::class, 'image']);
+    Route::post('/uploads/videos', [UploadController::class, 'video']);
+
+    Route::get('/lessons/{lesson}/preview', [LessonController::class, 'show'])->middleware('teacher')->name('lessons.show');
+
+    Route::get('/courses/{course}/lessons', [CourseLessonController::class, 'index'])
+        ->name('courses.lessons.index');
+    Route::get('/courses/{course}/lessons/{lesson:order}', [CourseLessonController::class, 'show'])
+        ->name('courses.lessons.show');
+
 });
 
 require __DIR__.'/settings.php';

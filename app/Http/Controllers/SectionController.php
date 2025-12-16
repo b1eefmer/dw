@@ -29,6 +29,7 @@ class SectionController extends Controller
             'slug' => 'introduction',
             'content' => 'This is your first lesson.',
             'order' => 1,
+            'course_id' => $section->course_id,
         ]);
 
         $course = Course::findOrFail($data['course_id']);

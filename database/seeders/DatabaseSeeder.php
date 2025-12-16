@@ -56,8 +56,8 @@ class DatabaseSeeder extends Seeder
             'course_id' => Course::all()->first()->id,
         ]);
 
-        Lesson::factory(10)->create([
-            'section_id' => Section::all()->first()->id,
-        ]);
+        // Lesson::factory(10)->create([
+        //     'section_id' => Section::all()->first()->id,
+        // ]);
     }
 }
