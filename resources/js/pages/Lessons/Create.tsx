@@ -12,7 +12,9 @@ import EditorWrapper from '@/components/Editor/EditorWrapper';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '@/theme'
 import { CssBaseline, Typography, Grid } from '@mui/material';
+import LessonVideoFields from '@/components/LessonVideoFields/LessonVideoFields';
 import VideoPlayer from '@/components/VideoPlayer/VideoPlayer';
+import VideoUpload from '@/components/VideoUpload/VideoUpload';
 
 
 interface PageProps {
@@ -26,7 +28,10 @@ export default function Index() {
         title: '',
         description: '',
         type: 'video',
+        video_source: 'youtube', // youtube | upload
         video_url: '',
+        video_file: null as File | null,
+        video_path: '',
         content_json: '',
         content_html: '',
         content_text: '',
@@ -103,24 +108,18 @@ export default function Index() {
                         </div>
                     )}
                     {data.type === 'video' && (
-                        <div className="gap-1.5 space-y-2">
-                            <Label htmlFor="video_url">Video URL</Label>
-                            <Input
-                                id="video_url"
-                                type="url"
-                                placeholder="https://www.youtube.com/watch?v=..."
-                                value={data.video_url}
-                                onChange={(e) => setData('video_url', e.target.value)}
-                            />
+                        <LessonVideoFields
+                            video_source={data.video_source as 'youtube' | 'upload'}
+                            video_url={data.video_url}
+                            video_path={data.video_path}
 
-                            {data.video_url && (
-                                <VideoPlayer
-                                    src={data.video_url}
-                                    poster={undefined}
-                                    title="Lesson video"
-                                />
-                            )}
-                        </div>
+                            onChangeSource={(v) => setData('video_source', v)}
+                            onChangeUrl={(v) => setData('video_url', v)}
+                            onUploaded={(path) => setData('video_path', path)}
+
+                            onClearUpload={() => setData('video_path', '')}
+                            onClearYoutube={() => setData('video_url', '')}
+                        />
                     )}
                     <Button type="submit" className='mt-4'>Create Lesson</Button>
                 </form>

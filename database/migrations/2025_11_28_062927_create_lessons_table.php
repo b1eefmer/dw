@@ -20,7 +20,9 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->integer('order')->default(0);
             $table->enum('type', ['text', 'video'])->default('text');
+            $table->enum('video_source', ['youtube', 'upload'])->nullable();
             $table->string('video_url')->nullable();
+            $table->string('video_path')->nullable();
             $table->longText('content_json')->nullable();
             $table->longText('content_html')->nullable();
             $table->text('content_text')->nullable();

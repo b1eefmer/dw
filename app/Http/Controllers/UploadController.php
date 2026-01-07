@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class UploadController extends Controller
 {
@@ -15,7 +16,7 @@ class UploadController extends Controller
         $path = $request->file('image')->store('lesson-images', 'public');
 
         return response()->json([
-            'url' => asset('storage/'.$path),
+            'url' => asset('storage/' . $path),
             'path' => $path,
         ]);
     }
@@ -29,7 +30,7 @@ class UploadController extends Controller
         $path = $request->file('video')->store('lesson-videos', 'public');
 
         return response()->json([
-            'url' => asset('storage/'.$path),
+            'url' => Storage::disk('public')->url($path),
             'path' => $path,
         ]);
     }

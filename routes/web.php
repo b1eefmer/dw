@@ -4,6 +4,7 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseEnrollmentController;
 use App\Http\Controllers\CourseLessonController;
 use App\Http\Controllers\LessonController;
+use App\Http\Controllers\LessonProgressController;
 use App\Http\Controllers\MyCoursesController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\UploadController;
@@ -58,7 +59,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/courses/{course}/lessons/{lesson:order}', [CourseLessonController::class, 'show'])
         ->name('courses.lessons.show');
 
+    Route::patch('lessons/{lesson}/progress', [LessonProgressController::class, 'update'])->name('lessons.progress.update');;
 });
 
-require __DIR__.'/settings.php';
-require __DIR__.'/auth.php';
+require __DIR__ . '/settings.php';
+require __DIR__ . '/auth.php';

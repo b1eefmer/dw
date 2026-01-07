@@ -2,6 +2,11 @@ import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 import VideoPlayer from '@/components/VideoPlayer/VideoPlayer';
+import React from 'react';
+import { route } from 'ziggy-js';
+
+
+type VideoKind = 'youtube' | 'file';
 
 interface Lesson {
     id: number;
@@ -9,32 +14,28 @@ interface Lesson {
     title: string;
     description: string | null;
     type: 'text' | 'video';
-    video_url: string | null;
     content_html: string | null;
+
+    // можно оставить, но фронту уже не обязательно
+    video_url?: string | null;
+    video_path?: string | null;
+    video_source?: 'youtube' | 'upload' | null;
+}
+
+interface Progress {
+    position_seconds: number;
+    is_completed: boolean;
 }
 
 interface PageProps {
     lesson: Lesson;
+    videoKind: VideoKind | null;
+    videoSrc: string | null;
+    progress: Progress | null;
 }
 
-const isValidYoutubeUrl = (url: string) => {
-    try {
-        const parsed = new URL(url);
-
-        // youtube.com/watch?v=...
-        if (parsed.hostname.includes('youtube.com') && parsed.searchParams.get('v')) return true;
-
-        // youtu.be/<id>
-        if (parsed.hostname === 'youtu.be' && parsed.pathname.length > 1) return true;
-
-        return false;
-    } catch {
-        return false;
-    }
-};
-
 export default function Show() {
-    const { lesson } = usePage<PageProps>().props;
+    const { lesson, videoKind, videoSrc, progress } = usePage<PageProps>().props;
 
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Sections', href: '/sections' },
@@ -42,8 +43,34 @@ export default function Show() {
         { title: lesson.title, href: `/lessons/${lesson.id}` },
     ];
 
-    const videoUrl = (lesson.video_url ?? '').trim();
-    const canShowVideo = lesson.type === 'video' && videoUrl && isValidYoutubeUrl(videoUrl);
+    const saveProgress = async (positionSeconds: number, durationSeconds?: number, ended?: boolean) => {
+        await fetch(route('lessons.progress.update', lesson.id), {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content ?? '',
+            },
+            body: JSON.stringify({
+                position_seconds: positionSeconds,
+                duration_seconds: durationSeconds,
+                is_completed: ended ? true : false,
+            }),
+        });
+    };
+
+    const lastSentRef = React.useRef(0);
+    const handleProgress = (p: { positionSeconds: number; durationSeconds?: number; ended?: boolean }) => {
+        const now = Date.now();
+        const shouldSend = p.ended || (now - lastSentRef.current > 5000);
+        if (!shouldSend) return;
+
+        lastSentRef.current = now;
+        saveProgress(p.positionSeconds, p.durationSeconds, p.ended);
+    };
+
+    console.log('progress from server:', progress?.position_seconds);
+
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -67,18 +94,18 @@ export default function Show() {
 
                 {lesson.type === 'video' && (
                     <div className="space-y-2">
-                        {canShowVideo ? (
-                            <VideoPlayer src={videoUrl} poster={undefined} title={lesson.title} />
+                        {videoKind && videoSrc ? (
+                            <VideoPlayer
+                                key={`${lesson.id}-${videoSrc ?? ''}`}
+                                kind={videoKind}
+                                src={videoSrc}
+                                title={lesson.title}
+                                startAtSeconds={progress?.position_seconds ?? 0}
+                                onProgress={handleProgress}
+                            />
                         ) : (
                             <div className="rounded-md border p-4 text-sm">
-                                Video link is missing or invalid.
-                                {videoUrl ? (
-                                    <>
-                                        <div className="mt-2">
-                                            Link: <a className="underline" href={videoUrl} target="_blank" rel="noreferrer">{videoUrl}</a>
-                                        </div>
-                                    </>
-                                ) : null}
+                                Video is missing.
                             </div>
                         )}
                     </div>

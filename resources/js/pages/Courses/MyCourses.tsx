@@ -42,7 +42,7 @@ export default function MyCourses() {
                         className="border rounded-lg p-4 bg-white shadow hover:shadow-xl transition"
                     >
                         <h3 className="text-xl font-semibold mb-2">
-                            <Link href={`/courses/${course.id}/lessons`} className="hover:underline">
+                            <Link href={`/courses/${course.id}/lessons/1`} className="hover:underline">
                                 {course.title}
                             </Link>
                         </h3>

@@ -8,6 +8,7 @@ use App\Services\SlugService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Storage;
 
 class LessonController extends Controller
 {
@@ -40,7 +41,28 @@ class LessonController extends Controller
             'description' => 'nullable|string',
             'section_id' => 'required|exists:sections,id',
             'type' => 'required|in:video,text',
-            'video_url' => ['nullable', 'url', 'required_if:type,video'],
+
+            'video_source' => ['nullable', Rule::in(['youtube', 'upload'])],
+
+            'video_url' => [
+                'nullable',
+                'url',
+                Rule::requiredIf(
+                    fn () =>
+                    $request->input('type') === 'video' &&
+                        $request->input('video_source', 'youtube') === 'youtube'
+                ),
+            ],
+
+            'video_path' => [
+                'nullable',
+                'string',
+                Rule::requiredIf(
+                    fn () =>
+                    $request->input('type') === 'video' &&
+                        $request->input('video_source') === 'upload'
+                ),
+            ],
 
             'content_json' => ['nullable', 'string', 'required_if:type,text'],
             'content_html' => ['nullable', 'string', 'required_if:type,text'],
@@ -53,6 +75,17 @@ class LessonController extends Controller
             $data['content_json'] = null;
             $data['content_html'] = null;
             $data['content_text'] = null;
+            $data['video_source'] = $data['video_source'] ?? 'youtube';
+
+            if ($data['video_source'] === 'youtube') {
+                $data['video_path'] = null;
+            } else {
+                $data['video_url'] = null;
+            }
+        } else {
+            $data['video_source'] = null;
+            $data['video_url'] = null;
+            $data['video_path'] = null;
         }
 
         if ($data['type'] === 'text') {
@@ -85,21 +118,50 @@ class LessonController extends Controller
             'description' => 'nullable|string',
             'type' => ['required', Rule::in(['text', 'video'])],
 
-            'video_url' => ['nullable', 'url', 'required_if:type,video'],
+            'video_source' => ['nullable', Rule::in(['youtube', 'upload'])],
+
+            'video_url' => [
+                'nullable',
+                'url',
+                Rule::requiredIf(
+                    fn () =>
+                    $request->input('type') === 'video'
+                        && $request->input('video_source', $lesson->video_source ?? 'youtube') === 'youtube'
+                ),
+            ],
+
+            'video_path' => [
+                'nullable',
+                'string',
+                Rule::requiredIf(
+                    fn () =>
+                    $request->input('type') === 'video'
+                        && $request->input('video_source', $lesson->video_source) === 'upload'
+                ),
+            ],
 
             'content_json' => ['nullable', 'string', 'required_if:type,text'],
             'content_html' => ['nullable', 'string', 'required_if:type,text'],
             'content_text' => ['nullable', 'string'],
         ]);
+
         $data['slug'] = SlugService::uniqueSlug($data['title'], Lesson::class, $lesson->id ?? null);
         if ($data['type'] === 'video') {
             $data['content_json'] = null;
             $data['content_html'] = null;
             $data['content_text'] = null;
-        }
 
-        if ($data['type'] === 'text') {
+            $data['video_source'] = $data['video_source'] ?? ($lesson->video_source ?? 'youtube');
+
+            if ($data['video_source'] === 'youtube') {
+                $data['video_path'] = null;
+            } else {
+                $data['video_url'] = null;
+            }
+        } else {
+            $data['video_source'] = null;
             $data['video_url'] = null;
+            $data['video_path'] = null;
         }
 
         $lesson->update($data);
@@ -107,7 +169,6 @@ class LessonController extends Controller
         $section = $lesson->section;
 
         return redirect()->route('sections.show', $section)->with('message', 'Lesson updated successfully.');
-
     }
 
     public function destroy(Lesson $lesson)
@@ -120,6 +181,34 @@ class LessonController extends Controller
 
     public function show(Lesson $lesson)
     {
-        return Inertia::render('Lessons/Show', compact('lesson'));
+        $videoKind = null;
+        $videoSrc = null;
+
+        if ($lesson->type === 'video') {
+            if ($lesson->video_source === 'upload' && $lesson->video_path) {
+                $videoKind = 'file';
+                $videoSrc = Storage::disk('public')->url($lesson->video_path);
+            } elseif ($lesson->video_source === 'youtube' && $lesson->video_url) {
+                $videoKind = 'youtube';
+                $videoSrc = $lesson->video_url;
+            }
+            $progress = null;
+            if (auth()->check()) {
+                $progress = \DB::table('lesson_progress')
+                    ->where('user_id', auth()->id())
+                    ->where('lesson_id', $lesson->id)
+                    ->first();
+            }
+        }
+
+        return Inertia::render('Lessons/Show', [
+            'lesson' => $lesson,
+            'progress' => $progress ? [
+                'position_seconds' => $progress->position_seconds,
+                'is_completed' => (bool)$progress->is_completed,
+            ] : null,
+            'videoKind' => $videoKind,
+            'videoSrc' => $videoSrc,
+        ]);
     }
 }

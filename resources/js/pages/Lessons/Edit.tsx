@@ -9,15 +9,19 @@ import { Terminal } from 'lucide-react';
 import EditorWrapper from '@/components/Editor/EditorWrapper';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '@/theme';
-import { CssBaseline, Grid, Typography } from '@mui/material';
-import VideoPlayer from '@/components/VideoPlayer/VideoPlayer';
+import { CssBaseline, Grid } from '@mui/material';
+import LessonVideoFields from '@/components/LessonVideoFields/LessonVideoFields';
 
 interface Lesson {
     id: number;
     title: string;
     description: string | null;
     type: 'text' | 'video';
+
+    video_source: 'youtube' | 'upload' | null;
     video_url: string | null;
+    video_path: string | null;
+
     content_json: string | null;
     content_html: string | null;
     content_text: string | null;
@@ -32,7 +36,10 @@ export default function Edit({ lesson }: Props) {
         title: lesson.title ?? '',
         description: lesson.description ?? '',
         type: lesson.type ?? 'text',
+
+        video_source: (lesson.video_source ?? 'youtube') as 'youtube' | 'upload',
         video_url: lesson.video_url ?? '',
+        video_path: lesson.video_path ?? '',
 
         content_json: lesson.content_json ?? '',
         content_html: lesson.content_html ?? '',
@@ -69,48 +76,42 @@ export default function Edit({ lesson }: Props) {
                         </Alert>
                     )}
 
-                    {/* TITLE */}
                     <div>
                         <Label>Lesson title</Label>
-                        <Input
-                            value={data.title}
-                            onChange={(e) => setData('title', e.target.value)}
-                        />
+                        <Input value={data.title} onChange={(e) => setData('title', e.target.value)} />
                     </div>
 
-                    {/* DESCRIPTION */}
                     <div>
                         <Label>Description</Label>
-                        <Textarea
-                            value={data.description}
-                            onChange={(e) => setData('description', e.target.value)}
-                        />
+                        <Textarea value={data.description} onChange={(e) => setData('description', e.target.value)} />
                     </div>
 
-                    {/* TYPE */}
                     <div>
                         <Label>Lesson type</Label>
                         <select
                             className="border rounded-md px-3 py-2 w-full"
                             value={data.type}
-                            onChange={(e) =>
-                                setData('type', e.target.value as 'text' | 'video')
-                            }
+                            onChange={(e) => {
+                                const t = e.target.value as 'text' | 'video';
+                                setData('type', t);
+
+                                // немного порядка: если переключились на text — чистим video поля
+                                if (t === 'text') {
+                                    setData('video_url', '');
+                                    setData('video_path', '');
+                                    // video_source можно оставить, но на бэке оно обнулится
+                                }
+                            }}
                         >
                             <option value="text">Text lesson</option>
                             <option value="video">Video lesson</option>
                         </select>
                     </div>
 
-                    {/* TEXT LESSON */}
                     {data.type === 'text' && (
                         <ThemeProvider theme={theme}>
                             <CssBaseline />
                             <Grid container spacing={2}>
-                                {/* <Grid item>
-                                    <Typography variant="h5">Lesson content</Typography>
-                                </Grid> */}
-
                                 <Grid item xs={12}>
                                     <EditorWrapper
                                         initialJson={data.content_json}
@@ -125,24 +126,17 @@ export default function Edit({ lesson }: Props) {
                         </ThemeProvider>
                     )}
 
-                    {/* VIDEO LESSON */}
                     {data.type === 'video' && (
-                        <div className="space-y-2">
-                            <Label>Video URL</Label>
-                            <Input
-                                placeholder="https://www.youtube.com/..."
-                                value={data.video_url}
-                                onChange={(e) => setData('video_url', e.target.value)}
-                            />
-
-                            {data.video_url && (
-                                <VideoPlayer
-                                    src={data.video_url}
-                                    poster={undefined}
-                                    title="Video preview"
-                                />
-                            )}
-                        </div>
+                        <LessonVideoFields
+                            video_source={data.video_source}
+                            video_url={data.video_url}
+                            video_path={data.video_path}
+                            onChangeSource={(v) => setData('video_source', v)}
+                            onChangeUrl={(v) => setData('video_url', v)}
+                            onUploaded={(path) => setData('video_path', path)}
+                            onClearUpload={() => setData('video_path', '')}
+                            onClearYoutube={() => setData('video_url', '')}
+                        />
                     )}
 
                     <Button type="submit" disabled={processing}>
