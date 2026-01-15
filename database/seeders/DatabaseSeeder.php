@@ -52,7 +52,7 @@ class DatabaseSeeder extends Seeder
             'user_id' => $user2->id,
         ]);
 
-        Section::factory(10)->create([
+        Section::factory(1)->create([
             'course_id' => Course::all()->first()->id,
         ]);
 
