@@ -74,12 +74,6 @@ export default function Show() {
                 )}
 
                 <div className="rounded-lg border p-4 space-y-3">
-                    <div className="text-sm text-slate-500">
-                        <span className="font-semibold">ID:</span> {course.id}
-                    </div>
-                    <div className="text-sm text-slate-500">
-                        <span className="font-semibold">User ID:</span> {course.user_id}
-                    </div>
                     <div>
                         <div className="text-sm font-semibold text-slate-600">Slug</div>
                         <div className="text-sm">{course.slug}</div>
@@ -96,8 +90,6 @@ export default function Show() {
                     <TableCaption>A list of your recent courses.</TableCaption>
                     <TableHeader>
                         <TableRow>
-                            <TableHead className="w-[100px]">Id</TableHead>
-                            <TableHead>Course id</TableHead>
                             <TableHead>Title</TableHead>
                             <TableHead>Description</TableHead>
                             <TableHead>Order</TableHead>
@@ -107,12 +99,13 @@ export default function Show() {
                     <TableBody>
                         {course.sections.map(section => (
                             <TableRow>
-                                <TableCell className="font-medium"><Link href={`/sections/${section.id}`}>{section.id}</Link></TableCell>
-                                <TableCell>{section.course_id}</TableCell>
                                 <TableCell>{section.title}</TableCell>
-                                <TableCell>{section.description}</TableCell>
+                                <TableCell>{section.description?.length && section.description.length > 50
+                                    ? section.description.slice(0, 50) + "…"
+                                    : section.description}</TableCell>
                                 <TableCell>{section.order}</TableCell>
                                 <TableCell className="text-center space-x-2">
+                                    <Link href={`/sections/${section.id}`}><Button disabled={processing} className='bg-blue-500 hover:bg-blue-700 text-white'>Section info</Button></Link>
                                     <Link href={`/sections/${section.id}/edit`}><Button disabled={processing} className='bg-slate-600 hover:bg-slate-700 text-white'>Edit</Button></Link>
                                     <Button disabled={processing} onClick={() => handleDelete(section.id, section.title)} className='bg-red-500 hover:bg-red-700 text-white'>Delete</Button>
                                 </TableCell>

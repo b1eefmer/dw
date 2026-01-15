@@ -1,9 +1,10 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, usePage, useForm } from '@inertiajs/react';
+import { Head, Link, usePage, useForm, router } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Megaphone } from 'lucide-react';
+import { route } from 'ziggy-js';
 
 interface Course {
     id: number;
@@ -30,20 +31,24 @@ export default function CourseGrid() {
     const { courses, flash, enrolledCourseIds } = usePage().props as PageProps;
     const { processing, delete: destroy, post } = useForm();
 
-    const handleDelete = (id: number, title: string) => {
-        if (confirm(`Are you sure you want to delete the course: ${id}, ${title}?`)) {
-            destroy(`/courses/${id}`);
-        }
-    };
-
     const handleEnroll = (id: number) => {
-        post(`/courses/${id}/enroll`);
+        post(`/courses/${id}/enroll`, {
+            preserveScroll: true,
+            onSuccess: () => {
+                router.reload({ only: ['enrolledCourseIds', 'courses', 'flash'] });
+            },
+        });
     };
 
     const handleUnenroll = (courseId: number) => {
         if (!confirm('Are you sure?')) return;
 
-        destroy(`/courses/${courseId}/enroll`);
+        destroy(`/courses/${courseId}/enroll`, {
+            preserveScroll: true,
+            onSuccess: () => {
+                router.reload({ only: ['enrolledCourseIds', 'courses', 'flash'] });
+            },
+        });
     };
 
     const isEnrolled = (id: number) => {
@@ -55,7 +60,7 @@ export default function CourseGrid() {
             <Head title="Courses Grid" />
 
             {flash.message && (
-                <div className="m-4">
+                <div className="m-4 ">
                     <Alert>
                         <Megaphone />
                         <AlertTitle>Notification!</AlertTitle>
@@ -71,7 +76,11 @@ export default function CourseGrid() {
                         className="border rounded-lg p-4 bg-white text-black shadow hover:shadow-xl transition"
                     >
                         <h3 className="text-xl font-semibold mb-2">
-                            <Link href={`/courses/${course.id}/lessons/1`} className="hover:underline">
+                            <Link href={
+                                isEnrolled(course.id)
+                                    ? route('courses.continue', course.id)
+                                    : route('courses.lessons.index', course.id)
+                            } className="hover:underline">
                                 {course.title}
                             </Link>
                         </h3>
@@ -79,14 +88,17 @@ export default function CourseGrid() {
                         <p className="text-sm text-slate-900 mb-3">{course.description}</p>
                         <div className="flex gap-2 mt-4">
                             {isEnrolled(course.id) ? (
-                                <Button
-                                    variant="destructive"
-                                    disabled={processing}
-                                    onClick={() => handleUnenroll(course.id)}
-                                >
-                                    Unenroll
-                                </Button>
+                                <>
+                                    <Button
+                                        variant="destructive"
+                                        disabled={processing}
+                                        onClick={() => handleUnenroll(course.id)}
+                                    >
+                                        Unenroll
+                                    </Button>
+                                </>
                             ) : (
+
                                 <Button
                                     type="button"
                                     disabled={processing}
@@ -94,6 +106,8 @@ export default function CourseGrid() {
                                 >
                                     Enroll
                                 </Button>
+
+
                             )}
                         </div>
                     </div>

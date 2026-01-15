@@ -46,7 +46,7 @@ export default function Show() {
             href: '/courses',
         },
         {
-            title: section.course_id.toString(),
+            title: section.course.title,
             href: `/courses/${section.course_id}`,
         },
         {
@@ -78,12 +78,6 @@ export default function Show() {
                 )}
 
                 <div className="rounded-lg border p-4 space-y-3">
-                    <div className="text-sm text-slate-500">
-                        <span className="font-semibold">ID:</span> {section.id}
-                    </div>
-                    <div className="text-sm text-slate-500">
-                        <span className="font-semibold">Course ID:</span> {section.course_id}
-                    </div>
                     <div>
                         <div className="text-sm font-semibold text-slate-600">Description</div>
                         <p className="text-sm whitespace-pre-line">
@@ -96,8 +90,6 @@ export default function Show() {
                     <TableCaption>A list of your recent courses.</TableCaption>
                     <TableHeader>
                         <TableRow>
-                            <TableHead className="w-[100px]">Id</TableHead>
-                            <TableHead>Course id</TableHead>
                             <TableHead>Title</TableHead>
                             <TableHead>Slug</TableHead>
                             <TableHead>Description</TableHead>
@@ -108,15 +100,15 @@ export default function Show() {
                     <TableBody>
                         {section.lessons.map(lesson => (
                             <TableRow>
-                                <TableCell className="font-medium">{lesson.id}</TableCell>
-                                <TableCell>{lesson.section_id}</TableCell>
                                 <TableCell>{lesson.title}</TableCell>
                                 <TableCell>{lesson.slug}</TableCell>
-                                <TableCell>{lesson.description}</TableCell>
+                                <TableCell>{lesson.description?.length && lesson.description.length > 50
+                                    ? lesson.description.slice(0, 50) + "…"
+                                    : lesson.description}</TableCell>
                                 <TableCell>{lesson.order}</TableCell>
                                 <TableCell className="text-center space-x-2">
+                                    <Link href={`/lessons/${lesson.id}/preview`}><Button disabled={processing} className='bg-blue-500 hover:bg-blue-700 text-white'>Show</Button></Link>
                                     <Link href={`/lessons/${lesson.id}/edit`}><Button disabled={processing} className='bg-slate-600 hover:bg-slate-700 text-white'>Edit</Button></Link>
-                                    <Link href={`/lessons/${lesson.id}/preview`}><Button disabled={processing} className='bg-slate-600 hover:bg-slate-700 text-white'>Show</Button></Link>
                                     <Button disabled={processing} onClick={() => handleDelete(lesson.id, lesson.title)} className='bg-red-500 hover:bg-red-700 text-white'>Delete</Button>
                                 </TableCell>
                             </TableRow>

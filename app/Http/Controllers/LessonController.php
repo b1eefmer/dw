@@ -6,16 +6,14 @@ use App\Models\Lesson;
 use App\Models\Section;
 use App\Services\SlugService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Storage;
 
 class LessonController extends Controller
 {
     public function index()
     {
-        // $lessons = Lesson::all();
-
         $lessons = auth()->user()
             ->courses()
             ->with('sections.lessons')
@@ -26,7 +24,6 @@ class LessonController extends Controller
             ->flatten();
 
         return Inertia::render('Lessons/Index', compact('lessons'));
-        // return Inertia::render('Lessons/Index', []);
     }
 
     public function create($sectionId)
@@ -48,8 +45,7 @@ class LessonController extends Controller
                 'nullable',
                 'url',
                 Rule::requiredIf(
-                    fn () =>
-                    $request->input('type') === 'video' &&
+                    fn () => $request->input('type') === 'video' &&
                         $request->input('video_source', 'youtube') === 'youtube'
                 ),
             ],
@@ -58,8 +54,7 @@ class LessonController extends Controller
                 'nullable',
                 'string',
                 Rule::requiredIf(
-                    fn () =>
-                    $request->input('type') === 'video' &&
+                    fn () => $request->input('type') === 'video' &&
                         $request->input('video_source') === 'upload'
                 ),
             ],
@@ -124,8 +119,7 @@ class LessonController extends Controller
                 'nullable',
                 'url',
                 Rule::requiredIf(
-                    fn () =>
-                    $request->input('type') === 'video'
+                    fn () => $request->input('type') === 'video'
                         && $request->input('video_source', $lesson->video_source ?? 'youtube') === 'youtube'
                 ),
             ],
@@ -134,8 +128,7 @@ class LessonController extends Controller
                 'nullable',
                 'string',
                 Rule::requiredIf(
-                    fn () =>
-                    $request->input('type') === 'video'
+                    fn () => $request->input('type') === 'video'
                         && $request->input('video_source', $lesson->video_source) === 'upload'
                 ),
             ],
@@ -183,6 +176,7 @@ class LessonController extends Controller
     {
         $videoKind = null;
         $videoSrc = null;
+        $progress = null;
 
         if ($lesson->type === 'video') {
             if ($lesson->video_source === 'upload' && $lesson->video_path) {
@@ -192,7 +186,6 @@ class LessonController extends Controller
                 $videoKind = 'youtube';
                 $videoSrc = $lesson->video_url;
             }
-            $progress = null;
             if (auth()->check()) {
                 $progress = \DB::table('lesson_progress')
                     ->where('user_id', auth()->id())
@@ -205,7 +198,7 @@ class LessonController extends Controller
             'lesson' => $lesson,
             'progress' => $progress ? [
                 'position_seconds' => $progress->position_seconds,
-                'is_completed' => (bool)$progress->is_completed,
+                'is_completed' => (bool) $progress->is_completed,
             ] : null,
             'videoKind' => $videoKind,
             'videoSrc' => $videoSrc,

@@ -36,4 +36,10 @@ class Lesson extends Model
         // hasOne, hasMany, belongsTo, belongsToMany
         return $this->belongsTo(Course::class);
     }
+
+    public function userProgress($userId)
+    {
+        return $this->hasOne(LessonProgress::class)
+            ->where('user_id', $userId);
+    }
 }

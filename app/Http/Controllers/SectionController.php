@@ -48,7 +48,6 @@ class SectionController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
         ]);
-        // $section = Section::findOrFail($section->id);
         $section->update([
             'title' => $data['title'],
             'description' => $data['description'],
@@ -71,7 +70,7 @@ class SectionController extends Controller
     public function show(Section $section)
     {
         // dd($section);
-        $section->load('lessons');
+        $section->load(['lessons', 'course']);
 
         return Inertia::render('Sections/Show', compact('section'));
     }

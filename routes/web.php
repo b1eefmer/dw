@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CourseContinueController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseEnrollmentController;
 use App\Http\Controllers\CourseLessonController;
@@ -56,11 +57,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/courses/{course}/lessons', [CourseLessonController::class, 'index'])
         ->name('courses.lessons.index');
-    Route::get('/courses/{course}/lessons/{lesson:order}', [CourseLessonController::class, 'show'])
+    Route::get('/courses/{course}/lessons/{lesson}', [CourseLessonController::class, 'show'])
         ->name('courses.lessons.show');
 
-    Route::patch('lessons/{lesson}/progress', [LessonProgressController::class, 'update'])->name('lessons.progress.update');;
+    Route::patch('lessons/{lesson}/progress', [LessonProgressController::class, 'update'])->name('lessons.progress.update');
+
+    Route::get('/courses/{course}/continue', [CourseContinueController::class, 'show'])->name('courses.continue');
 });
 
-require __DIR__ . '/settings.php';
-require __DIR__ . '/auth.php';
+require __DIR__.'/settings.php';
+require __DIR__.'/auth.php';

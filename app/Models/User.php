@@ -52,7 +52,6 @@ class User extends Authenticatable
 
     public function courses()
     {
-        // hasOne, hasMany, belongsTo, belongsToMany
         return $this->hasMany(Course::class);
     }
 
@@ -60,5 +59,10 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Course::class, 'course_user')
             ->withTimestamps();
+    }
+
+    public function lessonProgress()
+    {
+        return $this->hasMany(LessonProgress::class);
     }
 }

@@ -23,7 +23,6 @@ export class ImageNode extends DecoratorNode {
   __maxWidth;
   __showCaption;
   __caption;
-  // Captions cannot yet be used within editor cells
   __captionsEnabled;
 
   static getType() {
@@ -128,7 +127,6 @@ export class ImageNode extends DecoratorNode {
     writable.__showCaption = showCaption;
   }
 
-  // View
 
   createDOM(config) {
     const span = document.createElement("span");

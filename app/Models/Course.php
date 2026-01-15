@@ -18,7 +18,6 @@ class Course extends Model
 
     public function author()
     {
-        // hasOne, hasMany, belongsTo, belongsToMany
         return $this->belongsTo(User::class, 'user_id');
     }
 
@@ -30,7 +29,6 @@ class Course extends Model
 
     public function sections()
     {
-        // hasOne, hasMany, belongsTo, belongsToMany
         return $this->hasMany(Section::class);
     }
 

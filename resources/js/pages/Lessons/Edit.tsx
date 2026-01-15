@@ -95,11 +95,9 @@ export default function Edit({ lesson }: Props) {
                                 const t = e.target.value as 'text' | 'video';
                                 setData('type', t);
 
-                                // немного порядка: если переключились на text — чистим video поля
                                 if (t === 'text') {
                                     setData('video_url', '');
                                     setData('video_path', '');
-                                    // video_source можно оставить, но на бэке оно обнулится
                                 }
                             }}
                         >

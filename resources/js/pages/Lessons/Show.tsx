@@ -16,7 +16,6 @@ interface Lesson {
     type: 'text' | 'video';
     content_html: string | null;
 
-    // можно оставить, но фронту уже не обязательно
     video_url?: string | null;
     video_path?: string | null;
     video_source?: 'youtube' | 'upload' | null;

@@ -17,15 +17,13 @@ export default function VideoUpload({ onUploaded }: VideoUploadProps) {
 
         try {
             const form = new FormData();
-            form.append('video', file); // важно: имя поля как в UploadController
+            form.append('video', file);
 
             const res = await fetch('/upload/video', {
                 method: 'POST',
                 body: form,
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
-                    // если у тебя csrf не подхватывается автоматически:
-                    // 'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content ?? ''
                 },
             });
 
@@ -34,7 +32,7 @@ export default function VideoUpload({ onUploaded }: VideoUploadProps) {
                 throw new Error(text || 'Upload failed');
             }
 
-            const json = await res.json(); // { url, path }
+            const json = await res.json(); 
             setPreviewUrl(json.url);
             onUploaded({ path: json.path, url: json.url });
         } catch (e: any) {

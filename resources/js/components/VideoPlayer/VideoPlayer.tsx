@@ -11,14 +11,23 @@ export default function VideoPlayer({
 }: VideoPlayerProps) {
     const videoRef = React.useRef<HTMLVideoElement | null>(null);
     const didSeekRef = React.useRef(false);
+    function normalizeSrc(src: string) {
+        
+        if (src.startsWith('http://') || src.startsWith('https://')) return src;
 
-    // когда поменялся src или startAtSeconds — попробуем установить время
+        if (src.includes('.') && !src.startsWith('/')) return `http://${src}`;
+
+        if (!src.startsWith('/')) return `/${src}`;
+
+        // "/storage/.."
+        return src;
+    }
     React.useEffect(() => {
         if (kind !== 'file') return;
         const v = videoRef.current;
         if (!v) return;
 
-        didSeekRef.current = false; // разрешаем сделать seek заново для нового видео/позиции
+        didSeekRef.current = false;
 
         const trySeek = () => {
             if (!videoRef.current) return;
@@ -27,16 +36,13 @@ export default function VideoPlayer({
             const start = Number(startAtSeconds ?? 0);
             if (!Number.isFinite(start) || start <= 0) return;
 
-            // duration может быть NaN пока метаданные не загрузились
             if (!Number.isFinite(vv.duration) || vv.duration <= 0) return;
 
             const safe = Math.min(Math.max(start, 0), Math.max(vv.duration - 0.5, 0));
             if (didSeekRef.current) return;
 
-            // пробуем установить
             try {
                 vv.currentTime = safe;
-                // повтор через чуть-чуть (часто помогает)
                 setTimeout(() => {
                     if (!videoRef.current) return;
                     if (Math.abs(videoRef.current.currentTime - safe) > 1) {
@@ -46,12 +52,11 @@ export default function VideoPlayer({
             } catch (e) {
                 console.warn('seek failed', e);
             }
-            
+
 
             didSeekRef.current = true;
         };
 
-        // пробуем сразу и при событиях готовности
         trySeek();
         v.addEventListener('loadedmetadata', trySeek);
         v.addEventListener('loadeddata', trySeek);
@@ -84,12 +89,11 @@ export default function VideoPlayer({
                     height={height}
                     controls
                     poster={poster}
-                    src={src}
+                    src={normalizeSrc(src)}
                     style={{ borderRadius: '8px' }}
                     onLoadedMetadata={() => {
                         const v = videoRef.current;
                         if (!v) return;
-                        // просто лог для проверки
                         console.log('loadedmetadata duration=', v.duration, 'startAt=', startAtSeconds);
                     }}
                     onTimeUpdate={(e) => {

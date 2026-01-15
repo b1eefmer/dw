@@ -73,8 +73,6 @@ export default function Index() {
                         <TableCaption>A list of your recent courses.</TableCaption>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className="w-[100px]">Id</TableHead>
-                                <TableHead>User id</TableHead>
                                 <TableHead>Title</TableHead>
                                 <TableHead>Slug</TableHead>
                                 <TableHead>Description</TableHead>
@@ -84,12 +82,13 @@ export default function Index() {
                         <TableBody>
                             {courses.map((course) => (
                                 <TableRow>
-                                    <TableCell className="font-medium"><Link href={`/courses/${course.id}`}>{course.id}</Link></TableCell>
-                                    <TableCell>{course.user_id}</TableCell>
                                     <TableCell>{course.title}</TableCell>
                                     <TableCell>{course.slug}</TableCell>
-                                    <TableCell>{course.description}</TableCell>
+                                    <TableCell>{course.description.length > 50
+                                        ? course.description.slice(0, 50) + "…"
+                                        : course.description}</TableCell>
                                     <TableCell className="text-center space-x-2">
+                                        <Link href={`/courses/${course.id}`}><Button disabled={processing} className='bg-blue-500 hover:bg-blue-700 text-white'>Course info</Button></Link>
                                         <Link href={`/courses/${course.id}/edit`}><Button disabled={processing} className='bg-slate-600 hover:bg-slate-700 text-white'>Edit</Button></Link>
                                         <Button disabled={processing} onClick={() => handleDelete(course.id, course.title)} className='bg-red-500 hover:bg-red-700 text-white'>Delete</Button>
                                     </TableCell>

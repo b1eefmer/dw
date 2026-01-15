@@ -33,16 +33,16 @@ const mainNavItems: NavItem[] = [
         href: '/my-courses',
         icon: PackageSearch,
     },
-    {
-        title: 'Courses',
-        href: '/courses',
-        icon: PackageSearch,
-    },
-    {
-        title: 'Lessons',
-        href: '/lessons',
-        icon: PackageSearch,
-    },
+    // {
+    //     title: 'Courses',
+    //     href: '/courses',
+    //     icon: PackageSearch,
+    // },
+    // {
+    //     title: 'Lessons',
+    //     href: '/lessons',
+    //     icon: PackageSearch,
+    // },
 ];
 
 const footerNavItems: NavItem[] = [

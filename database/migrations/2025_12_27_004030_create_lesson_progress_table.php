@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('lesson_id')->constrained()->cascadeOnDelete();
 
-            $table->unsignedInteger('position_seconds')->default(0); // где остановился
-            $table->unsignedInteger('duration_seconds')->nullable(); // длительность (если знаем)
+            $table->unsignedInteger('position_seconds')->default(0); 
+            $table->unsignedInteger('duration_seconds')->nullable(); 
             $table->boolean('is_completed')->default(false);
             $table->timestamp('completed_at')->nullable();
 

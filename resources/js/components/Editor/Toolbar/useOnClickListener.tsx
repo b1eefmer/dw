@@ -194,7 +194,6 @@ const useOnClickListener = () => {
       formatBulletList();
     } else if (event === eventTypes.quote) {
       console.log(event);
-      //editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "quote");
       formatQuote();
     } else if (event === eventTypes.formatCode) {
       formatCode();
@@ -275,14 +274,6 @@ const useOnClickListener = () => {
   const formatCode = () => {
     if (blockType !== "code") {
       editor.dispatchCommand(FORMAT_TEXT_COMMAND, "code");
-      // below code insert the new block but we only need to format the specific part of the text into code format
-      //   editor.update(() => {
-      //     const selection = $getSelection();
-
-      //     if ($isRangeSelection(selection)) {
-      //       $wrapNodes(selection, () => $createCodeNode());
-      //     }
-      //   });
     }
   };
 

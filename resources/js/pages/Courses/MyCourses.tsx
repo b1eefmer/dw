@@ -1,6 +1,9 @@
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link, usePage, useForm } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
+import { route } from 'ziggy-js';
+import { router } from '@inertiajs/react';
+
 
 interface Course {
     id: number;
@@ -42,20 +45,29 @@ export default function MyCourses() {
                         className="border rounded-lg p-4 bg-white shadow hover:shadow-xl transition"
                     >
                         <h3 className="text-xl font-semibold mb-2">
-                            <Link href={`/courses/${course.id}/lessons/1`} className="hover:underline">
+                            <Link href={route('courses.continue', course.id)} className="hover:underline">
                                 {course.title}
                             </Link>
                         </h3>
 
                         <p className="text-sm text-gray-700 mb-3">{course.description}</p>
-
-                        <Button
-                            variant="destructive"
-                            disabled={processing}
-                            onClick={() => handleUnenroll(course.id)}
-                        >
-                            Unenroll
-                        </Button>
+                        <div className="flex gap-3">
+                            <Button
+                                variant="destructive"
+                                disabled={processing}
+                                onClick={() => handleUnenroll(course.id)}
+                            >
+                                Unenroll
+                            </Button>
+                            <Button
+                                className="bg-blue-600 hover:bg-blue-700 text-white"
+                                type="button"
+                                disabled={processing}
+                                onClick={() => router.visit(route('courses.continue', course.id))}
+                            >
+                                Continue
+                            </Button>
+                        </div>
                     </div>
                 ))}
             </div>

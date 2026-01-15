@@ -28,7 +28,7 @@ export default function Index() {
         title: '',
         description: '',
         type: 'video',
-        video_source: 'youtube', // youtube | upload
+        video_source: 'upload', // youtube | upload
         video_url: '',
         video_file: null as File | null,
         video_path: '',

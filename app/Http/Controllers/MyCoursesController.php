@@ -13,8 +13,6 @@ class MyCoursesController extends Controller
 
         $courses = $user->enrolledCourses()->get();
 
-        // return Inertia::render('Courses/Grid', compact('courses'));
-
         return Inertia::render('Courses/MyCourses', ['courses' => $courses]);
 
     }

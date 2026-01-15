@@ -89,7 +89,6 @@ export default function ImageComponent({
     const [isSelected, setSelected, clearSelection] =
         useLexicalNodeSelection(nodeKey);
     const [isResizing, setIsResizing] = useState(false);
-    // const { isCollabActive } = useCollaborationContext();
     const [editor] = useLexicalComposerContext();
     const [selection, setSelection] = useState(null);
     const activeEditorRef = useRef(null);
@@ -120,7 +119,6 @@ export default function ImageComponent({
                 latestSelection.getNodes().length === 1
             ) {
                 if (showCaption) {
-                    // Move focus into nested editor
                     $setSelection(null);
                     event.preventDefault();
                     caption.focus();
@@ -202,8 +200,6 @@ export default function ImageComponent({
                 DRAGSTART_COMMAND,
                 (event) => {
                     if (event.target === imageRef.current) {
-                        // TODO This is just a temporary workaround for FF to behave like other browsers.
-                        // Ideally, this handles drag & drop too (and all browsers).
                         event.preventDefault();
                         return true;
                     }
@@ -250,7 +246,6 @@ export default function ImageComponent({
     };
 
     const onResizeEnd = (nextWidth, nextHeight) => {
-        // Delay hiding the resize bars for click case
         setTimeout(() => {
             setIsResizing(false);
         }, 200);

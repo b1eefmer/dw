@@ -1,10 +1,3 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $wrapNodeInElement, mergeRegister } from "@lexical/utils";
 import {
@@ -84,19 +77,6 @@ export function InsertImageUploadedDialogBody({ onClick }) {
     const [altText, setAltText] = useState("");
 
     const isDisabled = src === "";
-
-    // const loadImage = (files) => {
-    //     const reader = new FileReader();
-    //     reader.onload = function () {
-    //         if (typeof reader.result === "string") {
-    //             setSrc(reader.result);
-    //         }
-    //         return "";
-    //     };
-    //     if (files !== null) {
-    //         reader.readAsDataURL(files[0]);
-    //     }
-    // };
 
     const uploadImage = async (file: File) => {
         const formData = new FormData();

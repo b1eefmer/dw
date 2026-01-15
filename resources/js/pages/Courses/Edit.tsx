@@ -12,7 +12,6 @@ import { Terminal } from 'lucide-react';
 interface Course {
     id: number;
     title: string;
-    //slug: string;
     description: string;
 }
 
@@ -23,7 +22,6 @@ interface Props {
 export default function Edit({ course }: Props) {
     const { data, setData, put, processing, errors } = useForm({
         title: course.title,
-        //slug: course.slug,
         description: course.description,
     });
     const handleUpdate = (e: React.FormEvent) => {

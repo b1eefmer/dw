@@ -79,7 +79,7 @@ export default function LessonVideoFields({
             onUploaded(json.path);
         } catch (e) {
             console.error(e);
-            setError('Ошибка загрузки видео');
+            setError('Upload failed');
         } finally {
             setUploading(false);
         }
@@ -93,7 +93,6 @@ export default function LessonVideoFields({
 
     return (
         <div className="space-y-4">
-            {/* source selector */}
             <div className="space-y-2">
                 <Label>Video source</Label>
                 <select
@@ -106,7 +105,6 @@ export default function LessonVideoFields({
                 </select>
             </div>
 
-            {/* YOUTUBE */}
             {video_source === 'youtube' && (
                 <div className="space-y-2">
                     <Label htmlFor="video_url">YouTube URL</Label>
@@ -127,7 +125,6 @@ export default function LessonVideoFields({
                 </div>
             )}
 
-            {/* UPLOAD */}
             {video_source === 'upload' && (
                 <div className="space-y-2">
                     <Label>Upload video</Label>

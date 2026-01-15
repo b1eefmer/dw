@@ -42,7 +42,6 @@ export default function ImageResizer({
 
 
     const editorRootElement = editor.getRootElement();
-    // Find max width, accounting for editor padding.
     const maxWidthContainer = maxWidth
         ? maxWidth
         : editorRootElement !== null

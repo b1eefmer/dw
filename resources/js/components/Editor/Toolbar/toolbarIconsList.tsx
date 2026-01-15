@@ -101,11 +101,6 @@ const pluginsList = [
     Icon: FormatUnderlinedOutlinedIcon,
     event: eventTypes.formatUnderline,
   },
-  // { // reactive it if you need it
-  //   id: 13,
-  //   Icon: StrikethroughSOutlinedIcon,
-  //   event: eventTypes.formatStrike,
-  // },
   {
     id: 13,
     Icon: ImageIcon,
